@@ -1,19 +1,4 @@
 services:
-  jellyfin:
-    image: linuxserver/jellyfin:latest
-    container_name: jellyfin
-    environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=Asia/Shanghai
-    volumes:
-      - /home/pi/docker/jellyfin/config:/config
-      - /home/pi/docker/jellyfin/cache:/cache
-      - /share/Video:/media:ro
-    ports:
-      - "8096:8096"
-    restart: unless-stopped
-
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -75,7 +60,7 @@ services:
       - TZ=Asia/Shanghai
       - HTTP_PROXY=http://172.18.0.1:10809
       - HTTPS_PROXY=http://172.18.0.1:10809
-      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,jellyfin
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr
     volumes:
       - /home/pi/docker/radarr/config:/config
       - /share/Movies:/movies
@@ -93,7 +78,7 @@ services:
       - TZ=Asia/Shanghai
       - HTTP_PROXY=http://172.18.0.1:10809
       - HTTPS_PROXY=http://172.18.0.1:10809
-      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,jellyfin,yts.gg,movies-api.accel.li,yts.mx
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
     volumes:
       - /home/pi/docker/jackett/config:/config
     ports:
@@ -109,7 +94,7 @@ services:
       - TZ=Asia/Shanghai
       - HTTP_PROXY=http://172.18.0.1:10809
       - HTTPS_PROXY=http://172.18.0.1:10809
-      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,jellyfin,yts.gg,movies-api.accel.li,yts.mx
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
     volumes:
       - /home/pi/docker/bazarr/config:/config
       - /share/Movies:/movies
