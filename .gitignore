@@ -1,0 +1,31 @@
+# Runtime data / generated configs
+*/config/*.db*
+*/config/logs/
+*/config/cache/
+*/config/data/
+*/config/MediaCover/
+*/config/Backup/
+*/config/Announcements/
+*/config/log.txt
+*/config/log.txt.*
+
+# Large media / downloads
+*/downloads/
+*/movies/
+*/tv/
+*/media/
+
+# Secrets
+*.key
+*.pem
+*.crt
+.env
+*secret*
+*password*
+*apikey*
+
+# Docker volumes that are bind mounts
+adguardhome/work/
+adguardhome/conf/
+portainer/data/
+jellyfin/cache/
