@@ -1,21 +1,38 @@
-# Runtime data / generated configs
-*/config/*.db*
-*/config/logs/
-*/config/cache/
-*/config/data/
-*/config/MediaCover/
-*/config/Backup/
-*/config/Announcements/
-*/config/log.txt
-*/config/log.txt.*
+# Runtime data / generated configs / logs
+**/logs/
+**/log/
+**/log.txt
+**/*.log
+**/*.log.*
+**/cache/
+**/data/
+**/db/
+**/backup/
+**/Backups/
+**/backup*.zip
+**/*.db
+**/*.db-*
+**/*.pid
+**/*.lock
+**/lockfile
+**/releases.txt
+**/announcements.json
+**/analytics_visitor_id.txt
+**/throttled_providers.dat
+**/__pycache__/
+**/*.pyc
+**/*.bak
+**/BT_backup/
+**/GeoDB/
+**/MediaCover/
 
 # Large media / downloads
-*/downloads/
-*/movies/
-*/tv/
-*/media/
+**/downloads/
+**/movies/
+**/tv/
+**/media/
 
-# Secrets
+# Secrets (keep these local only)
 *.key
 *.pem
 *.crt
@@ -23,9 +40,16 @@
 *secret*
 *password*
 *apikey*
+v2ray/config.json
+radarr/config/
+jackett/config/
 
-# Docker volumes that are bind mounts
+# Jellyfin runtime
+jellyfin/config/
+portainer/data/
 adguardhome/work/
 adguardhome/conf/
-portainer/data/
-jellyfin/cache/
+qbittorrent/config/
+bazarr/config/
+!bazarr/config/scripts/merge_bilingual_subs.py
+chinesesubfinder/config/ChineseSubFinderSettings.json

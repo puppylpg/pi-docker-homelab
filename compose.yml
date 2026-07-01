@@ -117,3 +117,17 @@ services:
     ports:
       - "6767:6767"
     restart: unless-stopped
+
+  chinesesubfinder:
+    image: allanpk716/chinesesubfinder:latest
+    container_name: chinesesubfinder
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+    volumes:
+      - /home/pi/docker/chinesesubfinder/config:/config
+      - /share/Movies:/media
+    ports:
+      - "19035:19035"
+    restart: unless-stopped

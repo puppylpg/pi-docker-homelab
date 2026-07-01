@@ -1,0 +1,15 @@
+UseProxy: false
+HttpProxy: ""
+TimeFormat: "yyyy-mm-dd"
+SubSaveDirName: "chinesesubfinder"
+Threads: 4
+SubTypePriority: 0
+DebugMode: false
+SaveMultiSub: false
+CustomVideoExts: ""
+FixTimeLine: false
+FFmpegPath: ""
+FFprobePath: ""
+AdvancedConfig: true
+MediaPaths:
+  - /media
