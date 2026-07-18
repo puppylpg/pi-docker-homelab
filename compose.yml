@@ -166,3 +166,37 @@ services:
     ports:
       - "5055:5055"
     restart: unless-stopped
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    environment:
+      - TZ=Asia/Shanghai
+      # 初次使用先开放注册，建好账号后改为 false 重建容器
+      - SIGNUPS_ALLOWED=true
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1
+    volumes:
+      # 保险库数据，务必纳入备份
+      - /home/pi/docker/vaultwarden/data:/data
+    ports:
+      - "8001:80"
+    restart: unless-stopped
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      # v1+ 必须显式允许访问的 Host
+      - HOMEPAGE_ALLOWED_HOSTS=192.168.1.7:3001,raspberrypi.local:3001,localhost:3001,127.0.0.1:3001
+    volumes:
+      - /home/pi/docker/homepage/config:/app/config
+      # 只读挂 docker socket，用于首页显示容器运行状态
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "3001:3000"
+    restart: unless-stopped

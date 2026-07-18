@@ -55,3 +55,6 @@ qbittorrent/config/
 bazarr/config/*
 !bazarr/config/scripts/
 chinesesubfinder/config/ChineseSubFinderSettings.json
+jellyfin/
+jellyseerr/
+vaultwarden/

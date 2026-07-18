@@ -1,0 +1,37 @@
+---
+- 影音:
+    - Jellyfin:
+        href: http://192.168.1.7:8096
+        description: 媒体播放
+    - Jellyseerr:
+        href: http://192.168.1.7:5055
+        description: 点播入口
+    - Radarr:
+        href: http://192.168.1.7:7878
+        description: 电影管理
+    - qBittorrent:
+        href: http://192.168.1.7:8085
+        description: BT 下载
+    - Bazarr:
+        href: http://192.168.1.7:6767
+        description: 字幕管理
+    - Jackett:
+        href: http://192.168.1.7:9117
+        description: 索引聚合
+    - ChineseSubFinder:
+        href: http://192.168.1.7:19035
+        description: 中文字幕补充
+
+- 系统:
+    - Homepage:
+        href: http://192.168.1.7:3001
+        description: 本导航页
+    - Vaultwarden:
+        href: http://192.168.1.7:8001
+        description: 密码管理
+    - AdGuard Home:
+        href: http://192.168.1.7:3000
+        description: DNS 去广告
+    - Portainer:
+        href: https://192.168.1.7:9443
+        description: 容器管理
