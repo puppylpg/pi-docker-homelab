@@ -19,7 +19,7 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "3000:3000/tcp"
-      - "80:80/tcp"
+      - "8080:80/tcp"
     restart: unless-stopped
 
   v2ray:
@@ -63,8 +63,10 @@ services:
       - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr
     volumes:
       - /home/pi/docker/radarr/config:/config
-      - /share/Movies:/movies
-      - /share/Downloads:/downloads
+      - /home/pi/docker/radarr/config/custom-cont-init.d:/custom-cont-init.d:ro
+      # 单一挂载，保证 /movies 与 /downloads 经软链落在同一挂载点下，
+      # 否则跨 bind mount 硬链接会 EXDEV，radarr 会退化为复制
+      - /share:/share
     ports:
       - "7878:7878"
     restart: unless-stopped
@@ -115,4 +117,17 @@ services:
       - /share/Movies:/media
     ports:
       - "19035:19035"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /home/pi/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /home/pi/docker/caddy/data:/data
+      - /home/pi/docker/caddy/config:/config
     restart: unless-stopped

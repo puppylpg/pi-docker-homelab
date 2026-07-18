@@ -167,13 +167,22 @@ def main():
         sys.exit(0)
 
     # Determine video stem and language
-    # Subtitle filename pattern: movie.en.srt, movie.zh.srt, etc.
-    name = sub_file.stem  # e.g. movie.en
+    # Subtitle filename patterns:
+    #   movie.en.srt, movie.zh.srt
+    #   movie.en.hi.srt, movie.zh.hi.srt  (hearing impaired variant)
+    name = sub_file.stem  # e.g. movie.en or movie.en.hi
     suffix = sub_file.suffix  # .srt
     parent = sub_file.parent
 
-    # Try to detect language part
     parts = name.split('.')
+    if len(parts) < 2:
+        print(f"Cannot detect language from {name}")
+        sys.exit(0)
+
+    # Strip optional hearing-impaired marker so it doesn't confuse language detection
+    if parts[-1].lower() == 'hi':
+        parts = parts[:-1]
+
     if len(parts) < 2:
         print(f"Cannot detect language from {name}")
         sys.exit(0)
@@ -181,8 +190,15 @@ def main():
     lang = parts[-1].lower()
     stem = '.'.join(parts[:-1])  # movie
 
-    en_sub = parent / f"{stem}.en{suffix}"
-    zh_sub = parent / f"{stem}.zh{suffix}"
+    def find_subtitle(parent, stem, lang, suffix):
+        """Find a subtitle, preferring the .hi variant but falling back to plain."""
+        hi_path = parent / f"{stem}.{lang}.hi{suffix}"
+        if hi_path.exists():
+            return hi_path
+        return parent / f"{stem}.{lang}{suffix}"
+
+    en_sub = find_subtitle(parent, stem, 'en', suffix)
+    zh_sub = find_subtitle(parent, stem, 'zh', suffix)
     bilingual_sub = parent / f"{stem}.zh+en{suffix}"
 
     if lang == 'en':

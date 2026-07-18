@@ -1,0 +1,14 @@
+raspberrypi.local {
+    reverse_proxy /radarr* radarr:7878 {
+        header_up Host {host}
+    }
+    reverse_proxy /jackett* jackett:9117 {
+        header_up Host {host}
+    }
+    reverse_proxy /bazarr* bazarr:6767 {
+        header_up Host {host}
+    }
+    reverse_proxy /adguard* adguardhome:80 {
+        header_up Host {host}
+    }
+}

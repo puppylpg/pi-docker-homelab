@@ -41,15 +41,17 @@
 *password*
 *apikey*
 v2ray/config.json
-radarr/config/
+radarr/config/*
+!radarr/config/custom-cont-init.d/
 jackett/config/
 
 # Jellyfin runtime
 jellyfin/config/
 portainer/data/
+caddy/config/
 adguardhome/work/
 adguardhome/conf/
 qbittorrent/config/
-bazarr/config/
-!bazarr/config/scripts/merge_bilingual_subs.py
+bazarr/config/*
+!bazarr/config/scripts/
 chinesesubfinder/config/ChineseSubFinderSettings.json
