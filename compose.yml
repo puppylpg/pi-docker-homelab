@@ -131,3 +131,38 @@ services:
       - /home/pi/docker/caddy/data:/data
       - /home/pi/docker/caddy/config:/config
     restart: unless-stopped
+
+  jellyfin:
+    image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      # 刮削元数据需要访问 TMDB，走宿主机 V2Ray 代理
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,jellyseerr,radarr
+    volumes:
+      - /home/pi/docker/jellyfin/config:/config
+      - /home/pi/docker/jellyfin/cache:/cache
+      # 只读挂载片库即可，元数据写在 config 里
+      - /share/Movies:/data/movies:ro
+    ports:
+      - "8096:8096"
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - TZ=Asia/Shanghai
+      # 搜索/海报依赖 TMDB API，走宿主机 V2Ray 代理
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,jellyfin,radarr
+    volumes:
+      - /home/pi/docker/jellyseerr/config:/app/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
