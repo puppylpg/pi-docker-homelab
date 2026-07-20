@@ -191,8 +191,8 @@ services:
       - PUID=1000
       - PGID=100
       - TZ=Asia/Shanghai
-      # v1+ 必须显式允许访问的 Host
-      - HOMEPAGE_ALLOWED_HOSTS=192.168.1.7:3001,raspberrypi.local:3001,localhost:3001,127.0.0.1:3001
+      # v1+ 必须显式允许访问的 Host（含经 Caddy 443 反代的 raspberrypi.local）
+      - HOMEPAGE_ALLOWED_HOSTS=raspberrypi.local,192.168.1.7:3001,raspberrypi.local:3001,localhost:3001,127.0.0.1:3001
     volumes:
       - /home/pi/docker/homepage/config:/app/config
       # 只读挂 docker socket，用于首页显示容器运行状态

@@ -1,14 +1,4 @@
 raspberrypi.local {
-    reverse_proxy /radarr* radarr:7878 {
-        header_up Host {host}
-    }
-    reverse_proxy /jackett* jackett:9117 {
-        header_up Host {host}
-    }
-    reverse_proxy /bazarr* bazarr:6767 {
-        header_up Host {host}
-    }
-    reverse_proxy /adguard* adguardhome:80 {
-        header_up Host {host}
-    }
+    # 根路径直接给 Homepage 导航页，其他服务从导航页点过去、直连端口
+    reverse_proxy homepage:3000
 }
