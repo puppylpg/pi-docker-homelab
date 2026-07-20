@@ -2,3 +2,9 @@ raspberrypi.local {
     # 根路径直接给 Homepage 导航页，其他服务从导航页点过去、直连端口
     reverse_proxy homepage:3000
 }
+
+# Vaultwarden 的 Web 保险库依赖浏览器 Web Crypto API，只在 HTTPS 下可用，
+# 不支持子路径，故单独开一个 HTTPS 端口反代
+raspberrypi.local:8443 {
+    reverse_proxy vaultwarden:80
+}

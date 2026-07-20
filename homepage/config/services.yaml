@@ -27,7 +27,7 @@
         href: https://raspberrypi.local/
         description: 本导航页
     - Vaultwarden:
-        href: http://raspberrypi.local:8001
+        href: https://raspberrypi.local:8443
         description: 密码管理
     - AdGuard Home:
         href: http://raspberrypi.local:3000
