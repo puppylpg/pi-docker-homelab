@@ -158,10 +158,8 @@ services:
     container_name: jellyseerr
     environment:
       - TZ=Asia/Shanghai
-      # 搜索/海报依赖 TMDB API，走宿主机 V2Ray 代理
-      - HTTP_PROXY=http://172.18.0.1:10809
-      - HTTPS_PROXY=http://172.18.0.1:10809
-      - NO_PROXY=localhost,127.0.0.1,jellyfin,radarr
+      # 不要在这里配 HTTP_PROXY：env 代理会劫持包括 Jellyfin/Radarr 在内的全部请求，
+      # 且各种 NO_PROXY 均不生效。TMDB 代理改在 Jellyseerr 网页 Settings → Network 里配置。
     volumes:
       - /home/pi/docker/jellyseerr/config:/app/config
     ports:
