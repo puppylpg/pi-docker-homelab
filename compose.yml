@@ -71,6 +71,25 @@ services:
       - "7878:7878"
     restart: unless-stopped
 
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,sonarr,jackett,bazarr,jellyseerr
+    volumes:
+      - /home/pi/docker/sonarr/config:/config
+      # 与 radarr 相同的单一 /share 挂载，/share/Downloads 到 /share/Video/Series
+      # 在同一挂载点内，导入时可硬链接而非复制
+      - /share:/share
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
   jackett:
     image: linuxserver/jackett:latest
     container_name: jackett
@@ -143,18 +162,21 @@ services:
       # 刮削元数据需要访问 TMDB，走宿主机 V2Ray 代理
       - HTTP_PROXY=http://172.18.0.1:10809
       - HTTPS_PROXY=http://172.18.0.1:10809
-      - NO_PROXY=localhost,127.0.0.1,jellyseerr,radarr
+      - NO_PROXY=localhost,127.0.0.1,jellyseerr,radarr,sonarr
     volumes:
       - /home/pi/docker/jellyfin/config:/config
       - /home/pi/docker/jellyfin/cache:/cache
       # 只读挂载片库即可，元数据写在 config 里
       - /share/Movies:/data/movies:ro
+      # Sonarr 管理的剧集库
+      - /share/Video/Series:/data/series:ro
     ports:
       - "8096:8096"
     restart: unless-stopped
 
   jellyseerr:
-    image: fallenbagel/jellyseerr:latest
+    # 项目已更名为 Seerr，新镜像发布在 ghcr（需经 ghcr.nju.edu.cn 拉取后重新 tag）
+    image: ghcr.io/seerr-team/seerr:latest
     container_name: jellyseerr
     environment:
       - TZ=Asia/Shanghai

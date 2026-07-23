@@ -9,6 +9,9 @@
     - Radarr:
         href: http://raspberrypi.local:7878
         description: 电影管理
+    - Sonarr:
+        href: http://raspberrypi.local:8989
+        description: 剧集管理
     - qBittorrent:
         href: http://raspberrypi.local:8085
         description: BT 下载
