@@ -1,0 +1,118 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    volumes:
+      - /home/pi/docker/portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9443:9443"
+    restart: unless-stopped
+
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    volumes:
+      - /home/pi/docker/adguardhome/work:/opt/adguardhome/work
+      - /home/pi/docker/adguardhome/conf:/opt/adguardhome/conf
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3000:3000/tcp"
+      - "80:80/tcp"
+    restart: unless-stopped
+
+  v2ray:
+    image: v2fly/v2fly-core:latest
+    container_name: v2ray
+    volumes:
+      - /home/pi/docker/v2ray/config.json:/etc/v2ray/config.json:ro
+    ports:
+      - "10808:10808/tcp"
+      - "10808:10808/udp"
+      - "10809:10809/tcp"
+    command: ["run", "-c", "/etc/v2ray/config.json"]
+    restart: unless-stopped
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - WEBUI_PORT=8085
+    volumes:
+      - /home/pi/docker/qbittorrent/config:/config
+      - /share/Downloads:/downloads
+    ports:
+      - "8085:8085"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr
+    volumes:
+      - /home/pi/docker/radarr/config:/config
+      - /share/Movies:/movies
+      - /share/Downloads:/downloads
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
+    volumes:
+      - /home/pi/docker/jackett/config:/config
+    ports:
+      - "9117:9117"
+    restart: unless-stopped
+
+  bazarr:
+    image: linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
+    volumes:
+      - /home/pi/docker/bazarr/config:/config
+      - /share/Movies:/movies
+      - /share/Downloads:/downloads
+    ports:
+      - "6767:6767"
+    restart: unless-stopped
+
+  chinesesubfinder:
+    image: allanpk716/chinesesubfinder:latest
+    container_name: chinesesubfinder
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+    volumes:
+      - /home/pi/docker/chinesesubfinder/config:/config
+      - /share/Movies:/media
+    ports:
+      - "19035:19035"
+    restart: unless-stopped

@@ -1,0 +1,203 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    volumes:
+      - /home/pi/docker/portainer/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9443:9443"
+    restart: unless-stopped
+
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguardhome
+    volumes:
+      - /home/pi/docker/adguardhome/work:/opt/adguardhome/work
+      - /home/pi/docker/adguardhome/conf:/opt/adguardhome/conf
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3000:3000/tcp"
+      - "8080:80/tcp"
+    restart: unless-stopped
+
+  v2ray:
+    image: v2fly/v2fly-core:latest
+    container_name: v2ray
+    volumes:
+      - /home/pi/docker/v2ray/config.json:/etc/v2ray/config.json:ro
+    ports:
+      - "10808:10808/tcp"
+      - "10808:10808/udp"
+      - "10809:10809/tcp"
+    command: ["run", "-c", "/etc/v2ray/config.json"]
+    restart: unless-stopped
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - WEBUI_PORT=8085
+    volumes:
+      - /home/pi/docker/qbittorrent/config:/config
+      - /share/Downloads:/downloads
+    ports:
+      - "8085:8085"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr
+    volumes:
+      - /home/pi/docker/radarr/config:/config
+      - /home/pi/docker/radarr/config/custom-cont-init.d:/custom-cont-init.d:ro
+      # 单一挂载，保证 /movies 与 /downloads 经软链落在同一挂载点下，
+      # 否则跨 bind mount 硬链接会 EXDEV，radarr 会退化为复制
+      - /share:/share
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
+    volumes:
+      - /home/pi/docker/jackett/config:/config
+    ports:
+      - "9117:9117"
+    restart: unless-stopped
+
+  bazarr:
+    image: linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
+    volumes:
+      - /home/pi/docker/bazarr/config:/config
+      - /share/Movies:/movies
+      - /share/Downloads:/downloads
+    ports:
+      - "6767:6767"
+    restart: unless-stopped
+
+  chinesesubfinder:
+    image: allanpk716/chinesesubfinder:latest
+    container_name: chinesesubfinder
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+    volumes:
+      - /home/pi/docker/chinesesubfinder/config:/config
+      - /share/Movies:/media
+    ports:
+      - "19035:19035"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+      - "8443:8443"
+    volumes:
+      - /home/pi/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /home/pi/docker/caddy/data:/data
+      - /home/pi/docker/caddy/config:/config
+    restart: unless-stopped
+
+  jellyfin:
+    image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      # 刮削元数据需要访问 TMDB，走宿主机 V2Ray 代理
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,jellyseerr,radarr
+    volumes:
+      - /home/pi/docker/jellyfin/config:/config
+      - /home/pi/docker/jellyfin/cache:/cache
+      # 只读挂载片库即可，元数据写在 config 里
+      - /share/Movies:/data/movies:ro
+    ports:
+      - "8096:8096"
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - TZ=Asia/Shanghai
+      # 搜索/海报依赖 TMDB API，走宿主机 V2Ray 代理
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1,jellyfin,radarr
+    volumes:
+      - /home/pi/docker/jellyseerr/config:/app/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    environment:
+      - TZ=Asia/Shanghai
+      # 初次使用先开放注册，建好账号后改为 false 重建容器
+      - SIGNUPS_ALLOWED=true
+      - HTTP_PROXY=http://172.18.0.1:10809
+      - HTTPS_PROXY=http://172.18.0.1:10809
+      - NO_PROXY=localhost,127.0.0.1
+    volumes:
+      # 保险库数据，务必纳入备份
+      - /home/pi/docker/vaultwarden/data:/data
+    ports:
+      - "8001:80"
+    restart: unless-stopped
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Asia/Shanghai
+      # v1+ 必须显式允许访问的 Host（含经 Caddy 443 反代的 raspberrypi.local）
+      - HOMEPAGE_ALLOWED_HOSTS=raspberrypi.local,192.168.1.7:3001,raspberrypi.local:3001,localhost:3001,127.0.0.1:3001
+    volumes:
+      - /home/pi/docker/homepage/config:/app/config
+      # 只读挂 docker socket，用于首页显示容器运行状态
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
