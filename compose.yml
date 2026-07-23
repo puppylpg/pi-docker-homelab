@@ -44,7 +44,6 @@ services:
       - WEBUI_PORT=8085
     volumes:
       - /home/pi/docker/qbittorrent/config:/config
-      - /share/Downloads:/downloads
       # 统一路径约定：与 radarr/sonarr 看到相同的绝对路径，无需远程路径映射
       - /share:/share
     ports:
