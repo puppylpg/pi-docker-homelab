@@ -45,6 +45,8 @@ services:
     volumes:
       - /home/pi/docker/qbittorrent/config:/config
       - /share/Downloads:/downloads
+      # 统一路径约定：与 radarr/sonarr 看到相同的绝对路径，无需远程路径映射
+      - /share:/share
     ports:
       - "8085:8085"
       - "6881:6881"
@@ -63,8 +65,7 @@ services:
       - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr
     volumes:
       - /home/pi/docker/radarr/config:/config
-      - /home/pi/docker/radarr/config/custom-cont-init.d:/custom-cont-init.d:ro
-      # 单一挂载，保证 /movies 与 /downloads 经软链落在同一挂载点下，
+      # 单一挂载，/share/Movies 与 /share/Downloads 在同一挂载点下，
       # 否则跨 bind mount 硬链接会 EXDEV，radarr 会退化为复制
       - /share:/share
     ports:
@@ -118,8 +119,8 @@ services:
       - NO_PROXY=localhost,127.0.0.1,qbittorrent,radarr,jackett,bazarr,yts.gg,movies-api.accel.li,yts.mx
     volumes:
       - /home/pi/docker/bazarr/config:/config
-      - /share/Movies:/movies
-      - /share/Downloads:/downloads
+      # 统一路径约定：跟随 radarr/sonarr 上报的 /share 路径
+      - /share:/share
     ports:
       - "6767:6767"
     restart: unless-stopped
